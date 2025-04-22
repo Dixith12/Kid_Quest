@@ -2,6 +2,7 @@ package com.example.kid_quest.screens.profile
 
 import BottomNav
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -30,6 +31,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.kid_quest.R
 import com.example.kid_quest.components.ProfilePic
@@ -38,7 +40,9 @@ import com.example.kid_quest.data.History
 import com.example.kid_quest.navigation.Screens
 
 @Composable
-fun ProfileScreen(navController: NavController) {
+fun ProfileScreen(navController: NavController,
+                  viewModel: ProfileViewModel= hiltViewModel()
+) {
     val listHistory= listOf(
         History(uid = "",
             quizName = "QuestZone",
@@ -46,12 +50,12 @@ fun ProfileScreen(navController: NavController) {
             points = 15,
             totalPoints = 20),
         History(uid = "",
-            quizName = "QuestZone",
+            quizName = "Quizzy",
             participated = "Yes",
             points = 15,
             totalPoints = 20),
         History(uid = "",
-            quizName = "QuestZone",
+            quizName = "Quest_pop",
             participated = "Yes",
             points = 15,
             totalPoints = 20)
@@ -72,13 +76,17 @@ fun ProfileScreen(navController: NavController) {
             .fillMaxSize()
             .padding(innerPadding).verticalScroll(rememberScrollState()),
             color = Color.White){
-                ProfileContent(listHistory,navController)
+                ProfileContent(listHistory,navController,viewModel)
         }
     }
 }
 
 @Composable
-fun ProfileContent(listHistory: List<History>, navController: NavController) {
+fun ProfileContent(
+    listHistory: List<History>,
+    navController: NavController,
+    viewModel: ProfileViewModel
+) {
     Column(modifier=Modifier
         .fillMaxSize()
         .padding(10.dp),
@@ -93,9 +101,16 @@ fun ProfileContent(listHistory: List<History>, navController: NavController) {
         }
         Spacer(modifier = Modifier.height(10.dp))
         FeatureShow(text="Competition Created",
-            image=R.drawable.bx_game)
+            image=R.drawable.bx_game){
+            navController.navigate(Screens.CreatedCompetition.route)
+        }
         FeatureShow(text = "Log Out",
-            image = R.drawable.logout)
+            image = R.drawable.logout){
+            viewModel.logOut()
+            navController.navigate(Screens.LoginScreen.route){
+                popUpTo(Screens.HomeScreen.route){inclusive=true}
+            }
+        }
         Spacer(modifier = Modifier.height(30.dp))
         Text("History",
             color = Color(0xFF7A7979),
@@ -121,9 +136,11 @@ fun ProfileContent(listHistory: List<History>, navController: NavController) {
 fun FeatureShow(text: String,
                 image: Int,
                 score:Int?=null,
-                totalScore:Int?=null) {
+                totalScore:Int?=null,
+                onClick:()->Unit={}) {
     Card(modifier=Modifier.fillMaxWidth(0.94f).
-    padding(vertical = 8.dp),
+    padding(vertical = 8.dp)
+        .clickable { onClick.invoke()},
         colors = CardDefaults.cardColors(Color.White),
         elevation = CardDefaults.cardElevation(10.dp)) {
         Row(modifier = Modifier.padding(15.dp).fillMaxWidth(),

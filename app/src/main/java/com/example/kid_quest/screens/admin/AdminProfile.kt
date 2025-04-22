@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -39,11 +40,11 @@ import com.example.kid_quest.screens.profile.createHistories
 @Composable
 fun AdminProfile() {
     val createHistory= listOf(
-        createHistories("Approved"),
-        createHistories("Approved"),
-        createHistories("Approved"),
-        createHistories("Declined"),
-        createHistories("Pending"))
+        createHistories("Approved","Quiz_Time"),
+        createHistories("Approved","Quiz_Zone"),
+        createHistories("Approved","Quest"),
+        createHistories("Declined","Quiz_Max"),
+        createHistories("Pending","Quiz_Pop"))
     Scaffold(
         topBar = {
             TopAppBar(
@@ -105,7 +106,9 @@ fun FeatureShow(text: String,
                 score:Int?=null,
                 totalScore:Int?=null) {
     Card(modifier=Modifier.fillMaxWidth(0.94f).
-    padding(vertical = 8.dp)) {
+    padding(vertical = 8.dp),
+        colors = CardDefaults.cardColors(Color.White),
+        elevation = CardDefaults.cardElevation(10.dp)) {
         Row(modifier = Modifier.padding(15.dp).fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween)

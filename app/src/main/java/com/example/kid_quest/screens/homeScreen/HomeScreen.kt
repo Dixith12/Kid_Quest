@@ -25,6 +25,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.FabPosition
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -54,6 +55,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.kid_quest.R
+import com.example.kid_quest.components.BottomBar
 import com.example.kid_quest.components.TopAppBar
 import com.example.kid_quest.data.HomeData
 import com.example.kid_quest.data.navItems
@@ -103,6 +105,10 @@ fun HomeScreen(navController: NavController) {
         bottomBar = {
             BottomNav(navController)
         },
+//        floatingActionButton = {
+//            BottomBar(navController)
+//        },
+//        floatingActionButtonPosition = FabPosition.Center,
         containerColor = Color.White,
     ) { innerPadding ->
         Surface(
@@ -170,10 +176,12 @@ fun HomePost(item: HomeData) {
 
 fun PostContent(item: HomeData) {
     val pagerState = rememberPagerState(pageCount = { item.images.size })
+    
 
     Card(
         shape = RoundedCornerShape(8.dp),
-        colors = CardDefaults.cardColors(Color(0x99A6A6B6)),
+        colors = CardDefaults.cardColors(Color.White),
+        elevation = CardDefaults.cardElevation(8.dp),
         modifier = Modifier
             .fillMaxSize()
             .padding(15.dp)

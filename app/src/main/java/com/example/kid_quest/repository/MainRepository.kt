@@ -52,4 +52,9 @@ class MainRepository @Inject constructor(
             }
     }
 
+    fun logOut()
+    {
+        auth.signOut()
+    }
+
 }

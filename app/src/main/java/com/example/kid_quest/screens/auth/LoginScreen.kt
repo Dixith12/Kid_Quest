@@ -22,6 +22,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -58,6 +59,7 @@ fun LoginScreen(
     var password by remember { mutableStateOf("") }
     var text = "Sign In"
     val context = LocalContext.current
+
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = Color.White

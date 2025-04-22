@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -40,7 +41,7 @@ fun SplashScreen(navController: NavController) {
         scale.animateTo(
             targetValue = 1f,
             animationSpec = tween(
-                durationMillis = 1000,
+                durationMillis = 1500,
                 easing = {
                     OvershootInterpolator(4f).getInterpolation(it)
                 }
@@ -74,19 +75,20 @@ fun SplashScreen(navController: NavController) {
         ) {
             Image(
                 painter = painterResource(id = R.drawable.kids_logo),
-                contentDescription = "Kids_Image"
+                contentDescription = "Kids_Image",
+                modifier = Modifier.size(280.dp)
             )
             Spacer(modifier = Modifier.height(16.dp))
             Text(
                 "Kid_Quest",
-                fontSize = 50.sp,
+                fontSize = 45.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.Black
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
                 "Learning, together",
-                fontSize = 20.sp,
+                fontSize = 16.sp,
                 fontWeight = FontWeight.Normal,
                 color = Color.Black
             )

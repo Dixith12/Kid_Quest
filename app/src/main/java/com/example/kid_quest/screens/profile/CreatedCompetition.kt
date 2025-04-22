@@ -2,7 +2,6 @@ package com.example.kid_quest.screens.profile
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -11,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -21,25 +21,27 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import com.example.kid_quest.R
 import com.example.kid_quest.components.ProfilePic
 import com.example.kid_quest.components.TopAppBar
 import com.example.kid_quest.data.History
+import com.example.kid_quest.navigation.Screens
 
-data class createHistories(val access:String)
-@Preview
+data class createHistories(val access:String,val name:String)
 @Composable
-fun CreatedCompetition() {
+fun CreatedCompetition(navController: NavController,
+                       viewModel: ProfileViewModel=hiltViewModel()) {
 
     val createHistory= listOf(
-        createHistories("Approved"),
-        createHistories("Approved"),
-        createHistories("Approved"),
-        createHistories("Declined"),
-        createHistories("Pending"))
+        createHistories("Approved","Quiz_Time"),
+        createHistories("Approved","Quiz_Zone"),
+        createHistories("Approved","Quest"),
+        createHistories("Declined","Quiz_Max"),
+        createHistories("Pending","Quiz_Pop"))
     val listHistory= listOf(
         History(uid = "",
             quizName = "QuestZone",
@@ -67,14 +69,23 @@ fun CreatedCompetition() {
             innerPadding ->
         Surface(modifier= Modifier
             .fillMaxSize()
-            .padding(innerPadding)){
-            CreateContent(createHistory)
+            .padding(innerPadding),
+            color = Color.White){
+            CreateContent(
+                createHistory,
+                navController,
+                viewModel
+            )
         }
     }
 }
 
 @Composable
-fun CreateContent(createHistory: List<createHistories>) {
+fun CreateContent(
+    createHistory: List<createHistories>,
+    navController: NavController,
+    viewModel: ProfileViewModel
+) {
     Column(modifier=Modifier
         .fillMaxSize()
         .padding(10.dp),
@@ -85,10 +96,14 @@ fun CreateContent(createHistory: List<createHistories>) {
             name = "Deekshith Kulal",
             email = "deekshithskulal485@gmail.com",
             profile = R.drawable.profileimage){
+            viewModel.logOut()
+            navController.navigate(Screens.LoginScreen.route){
+                popUpTo(Screens.HomeScreen.route){inclusive=true}
+            }
         }
         createHistory.forEach {
             create->
-            CreateList(text = "Quiz_Time",
+            CreateList(text = create.name,
                 R.drawable.bx_game,
                 access=create.access)
         }
@@ -103,7 +118,9 @@ fun CreateList(
     access: String
 ) {
     Card(modifier=Modifier.fillMaxWidth(0.94f).
-    padding(vertical = 8.dp)) {
+    padding(vertical = 8.dp),
+        colors = CardDefaults.cardColors(Color.White),
+        elevation = CardDefaults.cardElevation(10.dp)) {
         Row(
             modifier = Modifier.padding(5.dp).fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
@@ -121,6 +138,7 @@ fun CreateList(
                     )
                     Text(
                         text,
+                        color = Color.Black,
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Bold,
                         modifier = Modifier.weight(1f),

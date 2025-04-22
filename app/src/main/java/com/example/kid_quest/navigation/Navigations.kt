@@ -18,6 +18,7 @@ import com.example.kid_quest.screens.competition.CompetitionScreen
 import com.example.kid_quest.screens.competition.CreateCompition
 import com.example.kid_quest.screens.homeScreen.HomeScreen
 import com.example.kid_quest.screens.learning.LearningScreen
+import com.example.kid_quest.screens.profile.CreatedCompetition
 import com.example.kid_quest.screens.profile.EditProfile
 import com.example.kid_quest.screens.profile.ProfileScreen
 
@@ -29,7 +30,6 @@ fun Navigations() {
 
     Scaffold(
         modifier = Modifier
-            .systemBarsPadding()
             .fillMaxSize()
     ) { innerPadding ->
         NavHost(navController = navController, startDestination = Screens.SplashScreen.route) {
@@ -59,6 +59,9 @@ fun Navigations() {
             }
             composable(Screens.EditProfile.route){
                 EditProfile()
+            }
+            composable(Screens.CreatedCompetition.route){
+                CreatedCompetition(navController)
             }
         }
     }
