@@ -12,4 +12,5 @@ sealed class Screens(val route:String){
     object EditProfile : Screens("EditProfile")
     object ProfileScreen : Screens("ProfileScreen")
     object AdminProfile: Screens("AdminProfile")
+    object PostScreen : Screens("PostScreen")
 }

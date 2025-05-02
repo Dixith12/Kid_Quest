@@ -20,7 +20,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -31,9 +34,9 @@ import com.example.kid_quest.navigation.Screens
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.delay
 
-
+@Preview
 @Composable
-fun SplashScreen(navController: NavController) {
+fun SplashScreen() {
     val scale = remember { Animatable(0f) }
 
     // Launch the animation when Composable enters
@@ -48,15 +51,15 @@ fun SplashScreen(navController: NavController) {
             )
         )
         delay(1000)
-        if (FirebaseAuth.getInstance().currentUser?.email.isNullOrEmpty()) {
-            navController.navigate(Screens.LoginScreen.route){
-                popUpTo(Screens.SplashScreen.route) { inclusive = true }
-            }
-        } else {
-            navController.navigate(Screens.HomeScreen.route){
-                popUpTo(Screens.SplashScreen.route) { inclusive = true }
-            }
-        }
+//        if (FirebaseAuth.getInstance().currentUser?.email.isNullOrEmpty()) {
+//            navController.navigate(Screens.LoginScreen.route){
+//                popUpTo(Screens.SplashScreen.route) { inclusive = true }
+//            }
+//        } else {
+//            navController.navigate(Screens.HomeScreen.route){
+//                popUpTo(Screens.SplashScreen.route) { inclusive = true }
+//            }
+//        }
     }
 
     Surface(
@@ -74,24 +77,25 @@ fun SplashScreen(navController: NavController) {
                 )
         ) {
             Image(
-                painter = painterResource(id = R.drawable.kids_logo),
+                painter = painterResource(id = R.drawable.anubhav),
                 contentDescription = "Kids_Image",
-                modifier = Modifier.size(280.dp)
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.FillBounds
             )
-            Spacer(modifier = Modifier.height(16.dp))
-            Text(
-                "Kid_Quest",
-                fontSize = 45.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.Black
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                "Learning, together",
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Normal,
-                color = Color.Black
-            )
+//            Spacer(modifier = Modifier.height(16.dp))
+//            Text(
+//                "ANUBHAV",
+//                fontSize = 45.sp,
+//                fontWeight = FontWeight.Bold,
+//                color = Color.Black
+//            )
+//            Spacer(modifier = Modifier.height(8.dp))
+//            Text(
+//                "Innovate, Create, Learn",
+//                fontSize = 16.sp,
+//                fontWeight = FontWeight.Normal,
+//                color = Color.Black
+//            )
         }
     }
 }

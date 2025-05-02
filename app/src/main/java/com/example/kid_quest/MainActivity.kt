@@ -33,6 +33,8 @@ import android.os.Build
 import android.view.View
 import android.view.WindowInsets
 import android.view.WindowInsetsController
+import com.example.kid_quest.screens.SplashScreen
+
 fun hideSystemUI(activity: Activity) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
         activity.window.insetsController?.let {
@@ -67,7 +69,7 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             Kid_QuestTheme {
-                Navigations()
+                SplashScreen()
             }
             hideSystemUI(this)
         }

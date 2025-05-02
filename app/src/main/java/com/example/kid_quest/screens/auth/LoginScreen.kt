@@ -158,7 +158,7 @@ fun LoginScreen(
                 ) {
                     Text(
                         buildAnnotatedString {
-                            append("Already have an account?")
+                            append("Don't have an account?")
                             append(" ")
                             withLink(
                                 link = LinkAnnotation.Clickable(
@@ -171,7 +171,7 @@ fun LoginScreen(
                                     }
                                 )
                             ) {
-                                append("Login")
+                                append("Create Account")
                             }
                         },
                         modifier = Modifier

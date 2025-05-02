@@ -2,8 +2,10 @@ package com.example.kid_quest.screens.homeScreen
 
 import BottomNav
 import android.annotation.SuppressLint
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -25,50 +27,46 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.FabPosition
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.example.kid_quest.R
-import com.example.kid_quest.components.BottomBar
 import com.example.kid_quest.components.TopAppBar
-import com.example.kid_quest.data.HomeData
-import com.example.kid_quest.data.navItems
+import com.example.kid_quest.data.Post
 import com.example.kid_quest.navigation.Screens
-import com.example.kid_quest.ui.theme.Kid_QuestTheme
-import com.example.kid_quest.ui.theme.postone
-import com.google.android.gms.common.internal.safeparcel.SafeParcelable
 
 @SuppressLint("AutoboxingStateCreation")
 @Composable
-fun HomeScreen(navController: NavController) {
+fun HomeScreen(
+    navController: NavController,
+    viewModel: HomeViewModel = hiltViewModel()
+) {
     var itemss = listOf(
-        HomeData(
+        Post(
             name = "Deekshith",
             profileImage = R.drawable.profile,
             images = listOf(R.drawable.image, R.drawable.image, R.drawable.image),
@@ -76,7 +74,7 @@ fun HomeScreen(navController: NavController) {
             count = 112,
             timestamp = "10:00 AM Sun,Oct 6 2024"
         ),
-        HomeData(
+        Post(
             name = "Deekshith",
             profileImage = R.drawable.profile,
             images = listOf(R.drawable.image, R.drawable.image, R.drawable.image),
@@ -84,7 +82,7 @@ fun HomeScreen(navController: NavController) {
             count = 112,
             timestamp = "10:00 AM Sun,Oct 6 2024"
         ),
-        HomeData(
+        Post(
             name = "Deekshith",
             profileImage = R.drawable.profile,
             images = listOf(R.drawable.image, R.drawable.image, R.drawable.image),
@@ -93,14 +91,18 @@ fun HomeScreen(navController: NavController) {
             timestamp = "10:00 AM Sun,Oct 6 2024"
         )
     )
+
+    val posts = viewModel.posts.collectAsStateWithLifecycle().value
     Scaffold(
         modifier = Modifier
             .fillMaxSize(),
         topBar = {
             TopAppBar(
                 name = "Kid_Quest",
-                icon = R.drawable.message
-            )
+                icon = R.drawable.message,
+                onclick = {
+                    navController.navigate(Screens.PostScreen.route)
+                })
         },
         bottomBar = {
             BottomNav(navController)
@@ -117,29 +119,47 @@ fun HomeScreen(navController: NavController) {
                 .padding(innerPadding),
             color = Color.White
         ) {
-            HomeContent(itemss)
+            if (posts.loading == true) {
+                Column(
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                )
+                {
+                    CircularProgressIndicator(color = Color.Black)
+                }
+            } else {
+                HomeContent(
+                    itemss,
+                    posts = posts.data,
+                )
+            }
         }
     }
 }
 
 
-
 @Composable
-fun HomeContent(items: List<HomeData>) {
+fun HomeContent(items: List<Post>, posts: List<Post>?) {
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
 //            .padding(15.dp)
     ) {
-        items(items)
-        { item ->
+//        if (posts != null) {
+//            items(items = posts)
+//            { item ->
+//                HomePost(item)
+//            }
+//        }
+        items(items){
+            item->
             HomePost(item)
         }
     }
 }
 
 @Composable
-fun HomePost(item: HomeData) {
+fun HomePost(item: Post) {
     Column(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -174,9 +194,9 @@ fun HomePost(item: HomeData) {
 
 @Composable
 
-fun PostContent(item: HomeData) {
+fun PostContent(item: Post) {
     val pagerState = rememberPagerState(pageCount = { item.images.size })
-    
+
 
     Card(
         shape = RoundedCornerShape(8.dp),
@@ -212,15 +232,7 @@ fun PostContent(item: HomeData) {
                     Indicator(isActive = it == pagerState.currentPage)
                 }
             }
-            Text(
-                item.description,
-                modifier = Modifier.padding(15.dp),
-                color = Color(0xFF312C2C),
-                fontSize = 20.sp,
-                fontWeight = FontWeight.SemiBold,
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis
-            )
+            ExpandableText(text = item.description)
             Spacer(modifier = Modifier.height(20.dp))
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -252,8 +264,10 @@ fun PostContent(item: HomeData) {
                         color = Color(0xFF312C2C)
                     )
                 }
-                Text(text = item.timestamp,
-                    color = Color(0xFF312C2C))
+                Text(
+                    text = item.timestamp,
+                    color = Color(0xFF312C2C)
+                )
             }
 
         }
@@ -270,4 +284,48 @@ fun Indicator(isActive: Boolean = true) {
             .background(color = if (isActive) Color.Blue else Color.Gray, shape = CircleShape)
     )
 }
+
+@Composable
+fun ExpandableText(
+    text: String,
+    minimizedMaxLines: Int = 2
+) {
+    var isExpanded by remember { mutableStateOf(false) }
+    var isTextOverflowing by remember { mutableStateOf(false) }
+
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 15.dp)
+            .animateContentSize()
+    ) {
+        Text(
+            text = buildAnnotatedString {
+                append(text)
+
+                if (isTextOverflowing || isExpanded) {
+                    withStyle(style = SpanStyle(color = Color.Blue, fontWeight = FontWeight.Bold)) {
+                        append(if (isExpanded) " less" else "more")
+                    }
+                }
+            },
+            maxLines = if (isExpanded) Int.MAX_VALUE else minimizedMaxLines,
+            overflow = TextOverflow.Ellipsis,
+            color = Color(0xFF312C2C),
+            fontSize = 20.sp,
+            fontWeight = FontWeight.SemiBold,
+            onTextLayout = { layoutResult ->
+                if (!isExpanded) {
+                    isTextOverflowing = layoutResult.hasVisualOverflow
+                }
+            },
+            modifier = Modifier.clickable {
+                if (isTextOverflowing || isExpanded) {
+                    isExpanded = !isExpanded
+                }
+            }
+        )
+    }
+}
+
 

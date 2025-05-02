@@ -2,8 +2,6 @@ package com.example.kid_quest.navigation
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -18,6 +16,7 @@ import com.example.kid_quest.screens.competition.CompetitionScreen
 import com.example.kid_quest.screens.competition.CreateCompition
 import com.example.kid_quest.screens.homeScreen.HomeScreen
 import com.example.kid_quest.screens.learning.LearningScreen
+import com.example.kid_quest.screens.post.PostScreen
 import com.example.kid_quest.screens.profile.CreatedCompetition
 import com.example.kid_quest.screens.profile.EditProfile
 import com.example.kid_quest.screens.profile.ProfileScreen
@@ -34,7 +33,7 @@ fun Navigations() {
     ) { innerPadding ->
         NavHost(navController = navController, startDestination = Screens.SplashScreen.route) {
             composable(Screens.SplashScreen.route){
-                SplashScreen(navController)
+                SplashScreen()
             }
             composable(Screens.CreateAccount.route){
                 CreateScreen(navController = navController)
@@ -62,6 +61,9 @@ fun Navigations() {
             }
             composable(Screens.CreatedCompetition.route){
                 CreatedCompetition(navController)
+            }
+            composable(Screens.PostScreen.route) {
+                PostScreen()
             }
         }
     }

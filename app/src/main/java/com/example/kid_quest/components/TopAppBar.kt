@@ -1,5 +1,6 @@
 package com.example.kid_quest.components
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -35,7 +36,8 @@ import com.example.kid_quest.ui.theme.postone
 fun TopAppBar(
     name: String,
     icon: Int? = null,
-    front: ImageVector? = null
+    front: ImageVector? = null,
+    onclick:()->Unit ={}
 ) {
     Card(modifier = Modifier,
         shape = RoundedCornerShape(bottomStart = 10.dp, bottomEnd = 10.dp),
@@ -68,7 +70,10 @@ fun TopAppBar(
                 Icon(
                     imageVector = it,
                     contentDescription = "Create",
-                    tint = Color.Black
+                    tint = Color.Black,
+                    modifier = Modifier.clickable {
+                        onclick.invoke()
+                    }
                 )
             }
         }
