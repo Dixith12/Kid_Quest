@@ -1,13 +1,12 @@
 package com.example.kid_quest.data
 
 data class Post(
-    val postId: String="",
-    val uid:String="",
-    val name: String="",
-    val profileImage: Int?=null,
-    val images: List<Int>,
-    val description: String,
-    val count: Int= 0,
-    val timestamp: String
+    val postId: String = "",
+    val userId: String = "",
+    val description: String = "",
+    val username: String = "",
+    val userProfileUrl: String = "",
+    val timestamp: String = "",
+    val imageUrls: List<String> = emptyList(),
+    val likes: Int = 0
 )
-

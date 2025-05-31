@@ -16,6 +16,8 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.kid_quest.R
 import com.example.kid_quest.data.navItems
 import com.example.kid_quest.navigation.Screens
+import com.google.firebase.Firebase
+import com.google.firebase.auth.auth
 
 @Composable
 fun BottomNav(
@@ -28,17 +30,19 @@ fun BottomNav(
     var selectedIndex by remember {
         mutableIntStateOf(0)
     }
+    val user = Firebase.auth.currentUser
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
 
-    NavigationBar(containerColor = Color.White) {
+    NavigationBar(containerColor = Color.Black) {
         navlist.forEachIndexed { index, navItems ->
             NavigationBarItem(
             selected  = currentRoute == when (index) {
+
                 0 -> Screens.HomeScreen.route
                 1 -> Screens.CompetitionScreen.route
                 2 -> Screens.LearningScreen.route
-                3 -> Screens.ProfileScreen.route
+                3 -> if(user?.email =="Admin@gmail.com")Screens.AdminProfile.route else Screens.ProfileScreen.route
                 else -> ""
             },
             onClick = {
@@ -47,7 +51,10 @@ fun BottomNav(
                     0 -> navController.navigate(Screens.HomeScreen.route)
                     1 -> navController.navigate(Screens.CompetitionScreen.route)
                     2 -> navController.navigate(Screens.LearningScreen.route)
-                    3 -> navController.navigate(Screens.ProfileScreen.route)
+                    3 -> if (user?.email?.lowercase() == "admin@gmail.com")
+                            navController.navigate(Screens.AdminProfile.route)
+                        else
+                            navController.navigate(Screens.ProfileScreen.route)
                 }
             },
                 icon = {
@@ -55,17 +62,22 @@ fun BottomNav(
                         Icon(
                             painter = painterResource(navItems.icon),
                             contentDescription = "Icons",
-                            tint = Color.Black
+                            tint = Color.White
                         )
                     } else {
                         Icon(
                             painter = painterResource(navItems.icon),
                             contentDescription = "Icons",
-                            tint = Color(0xFF463F3F)
+                            tint = Color(0xFF6E6A6A)
                         )
                     }
                 },
-                label = { Text(text = navItems.label) },
+                label = {
+                    Text(text = navItems.label,
+                        color = if(selectedIndex==index)Color.White
+                    else
+                    Color(0xFF6E6A6A))
+                        },
                 colors = NavigationBarItemDefaults.colors(
                     indicatorColor = Color(0x99A6A6B6),
                     selectedTextColor = Color.Black

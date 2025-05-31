@@ -23,7 +23,6 @@ import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import com.example.kid_quest.navigation.Navigations
 import com.example.kid_quest.navigation.Screens
-import com.example.kid_quest.screens.homeScreen.HomeScreen
 import com.example.kid_quest.ui.theme.Kid_QuestTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -69,7 +68,7 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             Kid_QuestTheme {
-                SplashScreen()
+                Navigations()
             }
             hideSystemUI(this)
         }

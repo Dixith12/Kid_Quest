@@ -34,9 +34,8 @@ import com.example.kid_quest.navigation.Screens
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.delay
 
-@Preview
 @Composable
-fun SplashScreen() {
+fun SplashScreen(navController: NavController) {
     val scale = remember { Animatable(0f) }
 
     // Launch the animation when Composable enters
@@ -51,15 +50,15 @@ fun SplashScreen() {
             )
         )
         delay(1000)
-//        if (FirebaseAuth.getInstance().currentUser?.email.isNullOrEmpty()) {
-//            navController.navigate(Screens.LoginScreen.route){
-//                popUpTo(Screens.SplashScreen.route) { inclusive = true }
-//            }
-//        } else {
-//            navController.navigate(Screens.HomeScreen.route){
-//                popUpTo(Screens.SplashScreen.route) { inclusive = true }
-//            }
-//        }
+        if (FirebaseAuth.getInstance().currentUser?.email.isNullOrEmpty()) {
+            navController.navigate(Screens.LoginScreen.route){
+                popUpTo(Screens.SplashScreen.route) { inclusive = true }
+            }
+        } else {
+            navController.navigate(Screens.HomeScreen.route){
+                popUpTo(Screens.SplashScreen.route) { inclusive = true }
+            }
+        }
     }
 
     Surface(
@@ -82,20 +81,6 @@ fun SplashScreen() {
                 modifier = Modifier.fillMaxSize(),
                 contentScale = ContentScale.FillBounds
             )
-//            Spacer(modifier = Modifier.height(16.dp))
-//            Text(
-//                "ANUBHAV",
-//                fontSize = 45.sp,
-//                fontWeight = FontWeight.Bold,
-//                color = Color.Black
-//            )
-//            Spacer(modifier = Modifier.height(8.dp))
-//            Text(
-//                "Innovate, Create, Learn",
-//                fontSize = 16.sp,
-//                fontWeight = FontWeight.Normal,
-//                color = Color.Black
-//            )
         }
     }
 }

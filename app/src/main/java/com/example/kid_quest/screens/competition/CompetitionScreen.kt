@@ -3,7 +3,6 @@ package com.example.kid_quest.screens.competition
 import BottomNav
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -21,7 +20,6 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -32,12 +30,13 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.kid_quest.R
+import com.example.kid_quest.components.SurfaceColor
 import com.example.kid_quest.components.TopAppBar
+import com.example.kid_quest.navigation.Screens
 
 data class Quiz(
     val name:String
@@ -62,28 +61,27 @@ fun CompetitionScreen(navController: NavController) {
         },
         containerColor = Color.White) {
             innerPadding ->
-        Surface(modifier= Modifier
+        SurfaceColor(modifier= Modifier
             .fillMaxSize()
-            .padding(innerPadding)
-            .verticalScroll(rememberScrollState()),
-            color = Color.White){
-            CompetitionContent(name)
+            .padding(innerPadding)){
+            CompetitionContent(name,navController)
         }
     }
 }
 
 @Composable
-fun CompetitionContent(name: List<Quiz>) {
+fun CompetitionContent(name: List<Quiz>, navController: NavController) {
     Column(horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.padding(10.dp)){
-        CreateCard()
+        modifier = Modifier.padding(10.dp)
+        .verticalScroll(rememberScrollState())){
+        CreateCard(navController)
         Spacer(modifier = Modifier.height(20.dp))
-        JoinCard(name)
+        JoinCard(name,navController)
     }
 }
 
 @Composable
-fun JoinCard(name: List<Quiz>) {
+fun JoinCard(name: List<Quiz>, navController: NavController) {
     Card(modifier = Modifier.padding(10.dp),
         shape = RoundedCornerShape(25.dp),
         colors = CardDefaults.cardColors(Color.White),
@@ -123,7 +121,7 @@ fun JoinCard(name: List<Quiz>) {
             }
             name.forEach {
                 quiz->
-                Participation()
+                Participation(navController)
                 Spacer(modifier = Modifier.height(5.dp))
             }
         }
@@ -131,7 +129,7 @@ fun JoinCard(name: List<Quiz>) {
 }
 
 @Composable
-fun Participation() {
+fun Participation(navController: NavController) {
     Card(modifier = Modifier.fillMaxWidth(0.95f),
         shape = RoundedCornerShape(15.dp),
         colors = CardDefaults.cardColors(Color.White),
@@ -148,7 +146,7 @@ fun Participation() {
                 color = Color(0xFF5D5C5C)
             )
             Button(onClick = {
-
+                navController.navigate(Screens.JoinCompetiton.route)
             },
                 colors = ButtonDefaults.buttonColors(Color.Black))
             {
@@ -161,7 +159,7 @@ fun Participation() {
 }
 
 @Composable
-fun CreateCard() {
+fun CreateCard(navController: NavController) {
    Card(modifier = Modifier.padding(10.dp),
        shape = RoundedCornerShape(25.dp),
        colors = CardDefaults.cardColors(Color.White),
@@ -194,7 +192,7 @@ fun CreateCard() {
                     color = Color.Black,
                     textAlign = TextAlign.Center)
                 Button(onClick = {
-
+                        navController.navigate(Screens.CreateCompetition.route)
                 },
                     colors = ButtonDefaults.buttonColors(Color.Black),
                     modifier = Modifier.padding(top = 5.dp)) {

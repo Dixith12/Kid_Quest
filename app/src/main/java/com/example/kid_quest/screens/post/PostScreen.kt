@@ -1,6 +1,11 @@
 package com.example.kid_quest.screens.post
 
+import android.net.Uri
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -9,9 +14,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -24,9 +29,11 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -35,22 +42,25 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavHostController
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
+import coil.compose.rememberAsyncImagePainter
 import com.example.kid_quest.R
+import com.example.kid_quest.components.SurfaceColor
 import com.example.kid_quest.components.TopAppBar
+import com.example.kid_quest.screens.homeScreen.HomeViewModel
 
-@Preview
 @Composable
-fun PostScreen() {
+fun PostScreen(navController: NavController,
+               viewModel: HomeViewModel = hiltViewModel()) {
     Scaffold(
         topBar = {
             TopAppBar("Post")
@@ -59,22 +69,39 @@ fun PostScreen() {
 
         }
     ) { innerPadding ->
-        Surface(
+        SurfaceColor(
             modifier = Modifier
                 .padding(innerPadding)
-                .fillMaxSize(),
-            color = Color.White
+                .fillMaxSize()
+                .imePadding()
         ) {
-            UploadPost()
+            UploadPost(navController,viewModel)
         }
 
     }
 }
 
 @Composable
-fun UploadPost() {
+fun UploadPost(navController: NavController, viewModel: HomeViewModel) {
     var text by remember{
         mutableStateOf("")
+    }
+    val context = LocalContext.current
+
+    var imagepicker = remember {
+        mutableStateOf(listOf<Uri>())
+    }
+
+    val uploadResult by viewModel.uploadState.collectAsState()
+    LaunchedEffect(uploadResult) {
+        uploadResult?.let { result ->
+            if (result.isSuccess) {
+                Toast.makeText(context, "Post uploaded successfully", Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(context, "Upload failed: ${result.exceptionOrNull()?.message}", Toast.LENGTH_LONG).show()
+            }
+            viewModel.clearUploadState()
+        }
     }
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -104,7 +131,21 @@ fun UploadPost() {
             )
             Button(
                 onClick = {
-
+                    when {
+                        text.isEmpty() -> {
+                            Toast.makeText(context, "Please enter a description!", Toast.LENGTH_SHORT).show()
+                        }
+                        imagepicker.value.isEmpty() -> {
+                            Toast.makeText(context, "Please select at least one image!", Toast.LENGTH_SHORT).show()
+                        }
+                        imagepicker.value.size > 3 -> {
+                            Toast.makeText(context, "You can upload a maximum of 3 images!", Toast.LENGTH_SHORT).show()
+                        }
+                        else -> {
+                            viewModel.SavePostFirestore(imagepicker.value,text)
+                            navController.popBackStack()
+                        }
+                    }
 
                 },
                 colors = ButtonDefaults.buttonColors(Color.Gray),
@@ -118,7 +159,7 @@ fun UploadPost() {
             }
         }
         Spacer(modifier = Modifier.height(20.dp))
-        ImagePick()
+        ImagePick(imagepicker)
         Spacer(modifier = Modifier.height(20.dp))
         Descriptions(value=text,onValueChange = {
             text=it
@@ -152,33 +193,65 @@ fun Descriptions(value: String, onValueChange: (String) -> Unit) {
 }
 
 @Composable
-fun ImagePick() {
-    val list: List<Int> = listOf(R.drawable.image, R.drawable.profile, R.drawable.profileimage)
+fun ImagePick(imagepicker: MutableState<List<Uri>>) {
 
+
+    val imagepickeractivity = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetMultipleContents()
+    ){
+        uri->
+        if(uri.isNotEmpty()){
+            imagepicker.value = uri
+        }
+    }
     Box(
         modifier = Modifier
             .size(350.dp)
             .fillMaxWidth()
+            .clickable{
+                imagepickeractivity.launch("image/*")
+            }
     )
     {
-        if (list.size == 1) {
-            Image(
-                painter = painterResource(id = list[0]),
-                contentDescription = "",
-                modifier = Modifier.fillMaxSize(),
-                contentScale = ContentScale.FillBounds
-            )
-        }
-        else
+        if(imagepicker.value.isNotEmpty())
         {
-            LazyRow(){
-                items(list){
-                    item->
-                    Image(painter = painterResource(id = item),
-                        contentDescription = "Images",
-                        modifier = Modifier.height(350.dp)
-                            .width(350.dp),
-                        contentScale = ContentScale.FillBounds)
+            Column(
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.fillMaxSize()
+            )
+            {
+                Image(
+                    painter = painterResource(id = R.drawable.upload),
+                    contentDescription = "Upload",
+                    contentScale = ContentScale.FillBounds,
+                    modifier = Modifier
+                        .size(250.dp)
+                        .clickable {
+                            imagepickeractivity.launch("image/*")
+                        })
+            }
+        }
+        else if(imagepicker.value.isNotEmpty()) {
+            if (imagepicker.value.size == 1) {
+                Image(
+                    painter = rememberAsyncImagePainter(model = imagepicker.value[0]),
+                    contentDescription = "Select Single",
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.FillBounds
+                )
+            } else {
+                LazyRow(
+                    modifier = Modifier.fillMaxSize(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    items(imagepicker.value) { item ->
+                        Image(
+                            painter = rememberAsyncImagePainter(item),
+                            contentDescription = "Multiple Image",
+                            contentScale = ContentScale.FillBounds
+                        )
+                    }
                 }
             }
         }

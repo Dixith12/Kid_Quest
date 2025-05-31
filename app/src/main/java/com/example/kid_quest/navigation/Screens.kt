@@ -13,4 +13,7 @@ sealed class Screens(val route:String){
     object ProfileScreen : Screens("ProfileScreen")
     object AdminProfile: Screens("AdminProfile")
     object PostScreen : Screens("PostScreen")
+    object JoinCompetiton: Screens("JoinCompetition")
+    object AdminApprovalScreen: Screens("AdminApprovalScreen")
+
 }

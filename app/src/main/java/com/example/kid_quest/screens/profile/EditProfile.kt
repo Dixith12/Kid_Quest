@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -65,6 +66,7 @@ fun EditProfile() {
             innerPadding ->
         Surface(modifier= Modifier
             .fillMaxSize()
+            .imePadding()
             .padding(innerPadding),
             color = Color.White){
                 EditProfileContent(user)

@@ -29,6 +29,7 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -39,26 +40,34 @@ import com.example.kid_quest.components.TopAppBar
 import com.example.kid_quest.data.History
 import com.example.kid_quest.navigation.Screens
 
+@Preview
 @Composable
-fun ProfileScreen(navController: NavController,
-                  viewModel: ProfileViewModel= hiltViewModel()
+fun ProfileScreen(
+    navController: NavController,
+    viewModel: ProfileViewModel = hiltViewModel()
 ) {
-    val listHistory= listOf(
-        History(uid = "",
+    val listHistory = listOf(
+        History(
+            uid = "",
             quizName = "QuestZone",
             participated = "Yes",
             points = 15,
-            totalPoints = 20),
-        History(uid = "",
+            totalPoints = 20
+        ),
+        History(
+            uid = "",
             quizName = "Quizzy",
             participated = "Yes",
             points = 15,
-            totalPoints = 20),
-        History(uid = "",
+            totalPoints = 20
+        ),
+        History(
+            uid = "",
             quizName = "Quest_pop",
             participated = "Yes",
             points = 15,
-            totalPoints = 20)
+            totalPoints = 20
+        )
     )
 
     Scaffold(
@@ -70,13 +79,16 @@ fun ProfileScreen(navController: NavController,
         bottomBar = {
             BottomNav(navController)
         },
-        containerColor = Color.White) {
-        innerPadding ->
-        Surface(modifier=Modifier
-            .fillMaxSize()
-            .padding(innerPadding).verticalScroll(rememberScrollState()),
-            color = Color.White){
-                ProfileContent(listHistory,navController,viewModel)
+        containerColor = Color.White
+    ) { innerPadding ->
+        Surface(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+                .verticalScroll(rememberScrollState()),
+            color = Color.White
+        ) {
+            ProfileContent(listHistory, navController, viewModel)
         }
     }
 }
@@ -87,85 +99,112 @@ fun ProfileContent(
     navController: NavController,
     viewModel: ProfileViewModel
 ) {
-    Column(modifier=Modifier
-        .fillMaxSize()
-        .padding(10.dp),
-        horizontalAlignment = Alignment.CenterHorizontally)
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(10.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    )
     {
         ProfilePic(
             text = "Edit Profile",
             name = "Deekshith Kulal",
             email = "deekshithskulal485@gmail.com",
-            profile = R.drawable.profileimage){
+            profile = R.drawable.profileimage
+        ) {
             navController.navigate(Screens.EditProfile.route)
         }
         Spacer(modifier = Modifier.height(10.dp))
-        FeatureShow(text="Competition Created",
-            image=R.drawable.bx_game){
+        FeatureShow(
+            text = "Competition Created",
+            image = R.drawable.bx_game
+        ) {
             navController.navigate(Screens.CreatedCompetition.route)
         }
-        FeatureShow(text = "Log Out",
-            image = R.drawable.logout){
+        FeatureShow(
+            text = "Log Out",
+            image = R.drawable.logout
+        ) {
             viewModel.logOut()
-            navController.navigate(Screens.LoginScreen.route){
-                popUpTo(Screens.HomeScreen.route){inclusive=true}
+            navController.navigate(Screens.LoginScreen.route) {
+                popUpTo(Screens.HomeScreen.route) { inclusive = true }
             }
         }
         Spacer(modifier = Modifier.height(30.dp))
-        Text("History",
+        Text(
+            "History",
             color = Color(0xFF7A7979),
             fontSize = 20.sp,
             fontWeight = FontWeight.SemiBold,
             textAlign = TextAlign.Start,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 14.dp, bottom = 15.dp,
-                    top = 15.dp))
-        listHistory.forEach {
-            history->
-            FeatureShow(text = history.quizName,
+                .padding(
+                    start = 14.dp, bottom = 15.dp,
+                    top = 15.dp
+                )
+        )
+        listHistory.forEach { history ->
+            FeatureShow(
+                text = history.quizName,
                 image = R.drawable.history,
                 score = history.points,
-                totalScore = history.totalPoints)
+                totalScore = history.totalPoints
+            )
         }
 
     }
 }
 
 @Composable
-fun FeatureShow(text: String,
-                image: Int,
-                score:Int?=null,
-                totalScore:Int?=null,
-                onClick:()->Unit={}) {
-    Card(modifier=Modifier.fillMaxWidth(0.94f).
-    padding(vertical = 8.dp)
-        .clickable { onClick.invoke()},
+fun FeatureShow(
+    text: String,
+    image: Int,
+    score: Int? = null,
+    totalScore: Int? = null,
+    onClick: () -> Unit = {}
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth(0.94f)
+            .padding(vertical = 8.dp)
+            .clickable { onClick.invoke() },
         colors = CardDefaults.cardColors(Color.White),
-        elevation = CardDefaults.cardElevation(10.dp)) {
-        Row(modifier = Modifier.padding(15.dp).fillMaxWidth(),
+        elevation = CardDefaults.cardElevation(10.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .padding(15.dp)
+                .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween)
+            horizontalArrangement = Arrangement.SpaceBetween
+        )
         {
-            Box(){
-                Image(painter = painterResource(id = image),
-                contentDescription = "Image")
-            Text(text,
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold,
-                modifier=Modifier.padding(start = 37.dp),
-                color = Color.Black)
+            Box() {
+                Image(
+                    painter = painterResource(id = image),
+                    contentDescription = "Image"
+                )
+                Text(
+                    text,
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(start = 37.dp),
+                    color = Color.Black
+                )
             }
             if (score != null && totalScore != null) { // Only show if both values are provided
                 Box {
-                    Text(buildAnnotatedString {
-                        withStyle(style = SpanStyle(color = Color(0xFF7A7979))) {
-                            append(score.toString())
-                            append("/")
-                            append(totalScore.toString())
-                        }
-                    }, modifier = Modifier.padding(5.dp), fontWeight = FontWeight.SemiBold,
-                        fontSize = 18.sp)
+                    Text(
+                        buildAnnotatedString {
+                            withStyle(style = SpanStyle(color = Color(0xFF7A7979))) {
+                                append(score.toString())
+                                append("/")
+                                append(totalScore.toString())
+                            }
+                        }, modifier = Modifier.padding(5.dp), fontWeight = FontWeight.SemiBold,
+                        fontSize = 18.sp
+                    )
                 }
             }
         }

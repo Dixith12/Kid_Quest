@@ -19,11 +19,14 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.Shapes
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
@@ -40,11 +43,12 @@ fun TopAppBar(
     onclick:()->Unit ={}
 ) {
     Card(modifier = Modifier,
-        shape = RoundedCornerShape(bottomStart = 10.dp, bottomEnd = 10.dp),
-        colors = CardDefaults.cardColors(Color.White),
-        elevation = CardDefaults.cardElevation(15.dp)
+        colors = CardDefaults.cardColors(Color.Black),
+        elevation = CardDefaults.cardElevation(15.dp),
+        shape = RectangleShape
     )
-    {Box(modifier = Modifier
+    {
+        Box(modifier = Modifier
         .fillMaxWidth()
         .statusBarsPadding() // This pushes content BELOW status bar/punch-hole
         .padding(top = 20.dp)       // Normal padding after system inset
@@ -61,7 +65,7 @@ fun TopAppBar(
             if (icon != null) Spacer(modifier = Modifier.size(24.dp))
             Text(
                 text = name,
-                color = Color.Black,
+                color = Color.White,
                 fontFamily = postone,
                 fontSize = 40.sp,
                 textAlign = TextAlign.Center

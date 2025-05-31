@@ -10,10 +10,12 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.kid_quest.screens.SplashScreen
+import com.example.kid_quest.screens.admin.AdminApprovalScreen
 import com.example.kid_quest.screens.auth.CreateScreen
 import com.example.kid_quest.screens.auth.LoginScreen
 import com.example.kid_quest.screens.competition.CompetitionScreen
 import com.example.kid_quest.screens.competition.CreateCompition
+import com.example.kid_quest.screens.competition.JoinCompetition
 import com.example.kid_quest.screens.homeScreen.HomeScreen
 import com.example.kid_quest.screens.learning.LearningScreen
 import com.example.kid_quest.screens.post.PostScreen
@@ -33,7 +35,7 @@ fun Navigations() {
     ) { innerPadding ->
         NavHost(navController = navController, startDestination = Screens.SplashScreen.route) {
             composable(Screens.SplashScreen.route){
-                SplashScreen()
+                SplashScreen(navController)
             }
             composable(Screens.CreateAccount.route){
                 CreateScreen(navController = navController)
@@ -64,6 +66,12 @@ fun Navigations() {
             }
             composable(Screens.PostScreen.route) {
                 PostScreen()
+            }
+            composable(Screens.JoinCompetiton.route){
+                JoinCompetition()
+            }
+            composable(Screens.AdminApprovalScreen.route) {
+                AdminApprovalScreen()
             }
         }
     }
