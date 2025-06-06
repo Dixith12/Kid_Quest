@@ -1,4 +1,4 @@
-package com.example.kid_quest.data
+package com.example.kid_quest.models
 
 data class History(
     val uid:String,

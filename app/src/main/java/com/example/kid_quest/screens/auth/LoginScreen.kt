@@ -3,9 +3,12 @@ package com.example.kid_quest.screens.auth
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -20,10 +23,10 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -46,6 +49,7 @@ import androidx.compose.ui.text.withLink
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.example.kid_quest.R
 import com.example.kid_quest.components.TextFields
@@ -59,10 +63,14 @@ fun LoginScreen(
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var text = "Sign In"
+
+    val uiState by viewmodel.uiState.collectAsStateWithLifecycle()
+
     val context = LocalContext.current
 
     Surface(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
             .imePadding(),
         color = Color.White
     ) {
@@ -115,6 +123,40 @@ fun LoginScreen(
                         onChange = { password = it },
                         Imeaction = ImeAction.Done
                     )
+                    Row(
+                        horizontalArrangement = Arrangement.End,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(
+                            "Forgot Password?",
+                            modifier = Modifier.clickable {
+                                if (email.isEmpty()) Toast.makeText(
+                                    context,
+                                    "Please enter your email",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                                else {
+                                    viewmodel.forgotPassword(email = email, onSuccess = {
+                                        Toast.makeText(
+                                            context,
+                                            "Password Reset Email Sent",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                    }, onFailure = {
+                                        Toast.makeText(
+                                            context,
+                                            "Failed to send reset email",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                    })
+                                }
+                            },
+                            color = Color.Blue,
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(10.dp))
                     Button(
                         onClick = {
                             viewmodel.signIn(
@@ -126,14 +168,14 @@ fun LoginScreen(
                                         "Successfully Logged In",
                                         Toast.LENGTH_SHORT
                                     ).show()
-                                    navController.navigate(Screens.HomeScreen.route){
+                                    navController.navigate(Screens.HomeScreen.route) {
                                         popUpTo(Screens.SplashScreen.route) { inclusive = true }
                                     }//HomeScreen
                                 },
-                                onFailure = {
+                                onFailure = { e ->
                                     Toast.makeText(
                                         context,
-                                        "There have been some issue",
+                                        "Something went wrong: ${e.localizedMessage}",
                                         Toast.LENGTH_SHORT
                                     ).show()
                                 }
@@ -143,14 +185,28 @@ fun LoginScreen(
                             .fillMaxWidth()
                             .padding(top = 10.dp),
                         shape = RoundedCornerShape(8.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = Color.Black)
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color.Black,
+                            disabledContainerColor = Color.Black
+                        ),
+                        enabled = !uiState.loading
                     ) {
-                        Text(
-                            text = text,
-                            color = Color.White,
-                            modifier = Modifier.padding(10.dp),
-                            fontSize = 18.sp
-                        )
+                        if (!uiState.loading) {
+                            Text(
+                                text = text,
+                                color = Color.White,
+                                modifier = Modifier.padding(10.dp),
+                                fontSize = 18.sp
+                            )
+                        } else {
+                            CircularProgressIndicator(
+                                strokeWidth = 2.dp,
+                                color = Color.White,
+                                modifier = Modifier
+                                    .padding(10.dp)
+                                    .size(25.dp)
+                            )
+                        }
                     }
                 }
 

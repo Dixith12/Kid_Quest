@@ -21,6 +21,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -43,27 +44,34 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withLink
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.example.kid_quest.R
+import com.example.kid_quest.components.DatePicker
 import com.example.kid_quest.components.TextFields
 import com.example.kid_quest.navigation.Screens
 
 
 @Composable
-fun CreateScreen(navController: NavController,
-                 viewmodel: AuthViewmodel = hiltViewModel()) {
+fun CreateScreen(
+    navController: NavController,
+    viewmodel: AuthViewmodel = hiltViewModel()
+) {
     var name by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var dob by remember { mutableStateOf("") }
     var text = "Sign Up"
+
+    val uiState by viewmodel.uiState.collectAsStateWithLifecycle()
+
     val context = LocalContext.current
     Surface(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
             .imePadding(),
         color = Color.White
     ) {
@@ -104,55 +112,84 @@ fun CreateScreen(navController: NavController,
                         icon = Icons.Filled.Person,
                         value = name,
                         onChange = { name = it },
-                        Imeaction = ImeAction.Next)
+                        Imeaction = ImeAction.Next
+                    )
                     TextFields(
                         name = "Email",
                         icon = Icons.Filled.Email,
                         value = email,
                         onChange = { email = it },
-                        Imeaction = ImeAction.Next)
+                        Imeaction = ImeAction.Next
+                    )
                     TextFields(
                         name = "Password",
                         icon = Icons.Filled.Lock,
                         value = password,
                         onChange = { password = it },
-                        Imeaction = ImeAction.Next)
-                    TextFields(
-                        name = "DOB",
+                        Imeaction = ImeAction.Next
+                    )
+                    DatePicker(
+                        name = "Date of Birth",
                         icon = Icons.Filled.DateRange,
-                        value = dob,
-                        onChange = { dob = it },
-                        Imeaction = ImeAction.Done)
+                        dob = dob,
+                        Imeaction = ImeAction.Done,
+                        onDateSelected = {
+                            dob = it
+                        })
                     Button(
                         onClick = {
-                            if (name.isNotEmpty() && dob.isNotEmpty() && email.isNotEmpty() && password.isNotEmpty())
-                            {
-                                viewmodel.createAccount(email,password,name,dob,onSuccess = {
-                                    Toast.makeText(context,"Account Successfully Created", Toast.LENGTH_SHORT).show()
-                                    navController.navigate(Screens.HomeScreen.route){
+                            if (name.isNotEmpty() && dob.isNotEmpty() && email.isNotEmpty() && password.isNotEmpty()) {
+                                viewmodel.createAccount(email, password, name, dob, onSuccess = {
+                                    Toast.makeText(
+                                        context,
+                                        "Account Successfully Created",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                    navController.navigate(Screens.HomeScreen.route) {
                                         popUpTo(Screens.LoginScreen.route) { inclusive = true }
                                         popUpTo(Screens.CreateAccount.route) { inclusive = true }
                                     }
                                 }, onFailure = {
-                                    Toast.makeText(context,"There have been some issue", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(
+                                        context,
+                                        "Signup failed: ${it.localizedMessage}",
+                                        Toast.LENGTH_LONG
+                                    ).show()
                                 })
-                            }
-                            else{
-                                Toast.makeText(context,"Please fill all the fields", Toast.LENGTH_SHORT).show()
+                            } else {
+                                Toast.makeText(
+                                    context,
+                                    "Please fill all the fields",
+                                    Toast.LENGTH_SHORT
+                                ).show()
                             }
                         },
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(top = 10.dp),
                         shape = RoundedCornerShape(8.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = Color.Black)
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color.Black,
+                            disabledContainerColor = Color.Black
+                        ),
+                        enabled = !uiState.loading
                     ) {
-                        Text(
-                            text = text,
-                            color = Color.White,
-                            modifier = Modifier.padding(10.dp),
-                            fontSize = 18.sp
-                        )
+                        if (!uiState.loading) {
+                            Text(
+                                text = text,
+                                color = Color.White,
+                                modifier = Modifier.padding(10.dp),
+                                fontSize = 18.sp
+                            )
+                        } else {
+                            CircularProgressIndicator(
+                                strokeWidth = 2.dp,
+                                color = Color.White,
+                                modifier = Modifier
+                                    .padding(10.dp)
+                                    .size(25.dp)
+                            )
+                        }
                     }
                     Text(
                         buildAnnotatedString {

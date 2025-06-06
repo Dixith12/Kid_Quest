@@ -19,9 +19,12 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.State
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -32,24 +35,27 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.example.kid_quest.R
 import com.example.kid_quest.components.SurfaceColor
 import com.example.kid_quest.components.TopAppBar
+import com.example.kid_quest.models.CompetitionModel
 import com.example.kid_quest.navigation.Screens
 
 data class Quiz(
     val name:String
 )
 @Composable
-fun CompetitionScreen(navController: NavController) {
-    var name= listOf(
-        Quiz(name = "One Piece Quiz"),
-        Quiz(name = "One Piece Quiz"),
-        Quiz(name = "One Piece Quiz"),
-        Quiz(name = "One Piece Quiz"),
-        Quiz(name = "One Piece Quiz")
-    )
+fun CompetitionScreen(navController: NavController,
+                      viewModel: CompetitionViewModel= hiltViewModel()
+) {
+
+    LaunchedEffect(Unit) {
+        viewModel.getAllCompetition()
+    }
+    val uiState = viewModel.uiState.collectAsStateWithLifecycle()
     Scaffold(
         topBar = {
             TopAppBar(
@@ -63,25 +69,25 @@ fun CompetitionScreen(navController: NavController) {
             innerPadding ->
         SurfaceColor(modifier= Modifier
             .fillMaxSize()
-            .padding(innerPadding)){
-            CompetitionContent(name,navController)
+            .padding(innerPadding)
+            .verticalScroll(rememberScrollState())){
+            CompetitionContent(navController,uiState)
         }
     }
 }
 
 @Composable
-fun CompetitionContent(name: List<Quiz>, navController: NavController) {
+fun CompetitionContent(navController: NavController, uiState: State<UiState>) {
     Column(horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.padding(10.dp)
-        .verticalScroll(rememberScrollState())){
+        modifier = Modifier.padding(10.dp)){
         CreateCard(navController)
         Spacer(modifier = Modifier.height(20.dp))
-        JoinCard(name,navController)
+        JoinCard(navController,uiState)
     }
 }
 
 @Composable
-fun JoinCard(name: List<Quiz>, navController: NavController) {
+fun JoinCard(navController: NavController, uiState: State<UiState>) {
     Card(modifier = Modifier.padding(10.dp),
         shape = RoundedCornerShape(25.dp),
         colors = CardDefaults.cardColors(Color.White),
@@ -119,17 +125,24 @@ fun JoinCard(name: List<Quiz>, navController: NavController) {
                 }
 
             }
-            name.forEach {
-                quiz->
-                Participation(navController)
-                Spacer(modifier = Modifier.height(5.dp))
+            if(uiState.value.allcompetition.isEmpty())
+            {
+                HorizontalDivider()
+                Text("No Competition Found...!!",
+                    modifier = Modifier.padding(10.dp),
+                    color = Color.Black,
+                    fontWeight = FontWeight.Bold)
             }
+                uiState.value.allcompetition.forEach { quiz ->
+                    Participation(navController, quiz)
+                    Spacer(modifier = Modifier.height(5.dp))
+                }
         }
     }
 }
 
 @Composable
-fun Participation(navController: NavController) {
+fun Participation(navController: NavController, quiz: CompetitionModel) {
     Card(modifier = Modifier.fillMaxWidth(0.95f),
         shape = RoundedCornerShape(15.dp),
         colors = CardDefaults.cardColors(Color.White),
@@ -140,13 +153,13 @@ fun Participation(navController: NavController) {
             modifier = Modifier.fillMaxWidth()
                 .padding(horizontal = 10.dp, vertical = 3.dp))
         {
-            Text("One piece quiz",
+            Text(quiz.quizName,
                 modifier = Modifier.padding(start = 5.dp).weight(1f),
                 fontSize = 17.sp,
                 color = Color(0xFF5D5C5C)
             )
             Button(onClick = {
-                navController.navigate(Screens.JoinCompetiton.route)
+                navController.navigate(Screens.JoinCompetiton.passId(quiz.id))
             },
                 colors = ButtonDefaults.buttonColors(Color.Black))
             {

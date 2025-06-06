@@ -13,7 +13,16 @@ sealed class Screens(val route:String){
     object ProfileScreen : Screens("ProfileScreen")
     object AdminProfile: Screens("AdminProfile")
     object PostScreen : Screens("PostScreen")
-    object JoinCompetiton: Screens("JoinCompetition")
-    object AdminApprovalScreen: Screens("AdminApprovalScreen")
-
+    object JoinCompetiton: Screens("JoinCompetition/{id}")
+    {
+        fun passId(id: String): String = "JoinCompetition/$id"
+    }
+    object AdminApprovalScreen: Screens("AdminApprovalScreen/{id}")
+    {
+        fun passId(id: String): String = "AdminApprovalScreen/$id"
+    }
+    object VideoList : Screens("VideoList/{classLevel}") {
+        fun passClass(classLevel: Int): String = "VideoList/$classLevel"
+    }
+    object AddVideoFirestore : Screens("AddVideoFirestore")
 }

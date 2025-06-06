@@ -76,11 +76,16 @@ fun SplashScreen(navController: NavController) {
                 )
         ) {
             Image(
-                painter = painterResource(id = R.drawable.anubhav),
+                painter = painterResource(id = R.drawable.kids_logo),
                 contentDescription = "Kids_Image",
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier.size(350.dp),
                 contentScale = ContentScale.FillBounds
             )
+            Spacer(modifier = Modifier.height(10.dp))
+            Text("Kids Quest",
+                color = Color.Black,
+                fontSize = 35.sp,
+                fontWeight = FontWeight.Bold)
         }
     }
 }

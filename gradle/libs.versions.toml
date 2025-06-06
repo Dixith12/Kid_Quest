@@ -1,6 +1,7 @@
 [versions]
 agp = "8.10.0"
 coilComposeVersion = "2.4.0"
+core = "12.1.0"
 ksp = "2.0.21-1.0.27"
 kotlin = "2.0.21"
 coreKtx = "1.16.0"
@@ -23,6 +24,7 @@ googleServices = "4.4.2"
 [libraries]
 # Hilt
 coil-compose-v240 = { module = "io.coil-kt:coil-compose", version.ref = "coilComposeVersion" }
+core = { module = "com.pierfrancescosoffritti.androidyoutubeplayer:core", version.ref = "core" }
 hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hiltAndroid" }
 hilt-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hiltAndroid" }
 hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hiltNavigationCompose" }

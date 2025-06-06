@@ -15,10 +15,6 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object AppModule {
-    @Provides
-
-    @Singleton
-    fun provideFirebaseAuth(): FirebaseAuth = FirebaseAuth.getInstance()
 
     @Provides
     @Singleton
@@ -26,17 +22,8 @@ object AppModule {
 
     @Provides
     @Singleton
-    @Named("postQuery")
-    fun providePostQuery(): Query = FirebaseFirestore.getInstance().collection("posts").orderBy(
-        "timestamp",
-        Query.Direction.DESCENDING
-    )
-
-    @Provides
-    @Singleton
-    fun provideRepository(auth: FirebaseAuth, firestore: FirebaseFirestore): MainRepository =
+    fun provideRepository(firestore: FirebaseFirestore): MainRepository =
         MainRepository(
-            auth = auth,
             firestore = firestore,
             postQuery = FirebaseFirestore.getInstance().collection("posts").orderBy(
                 "timestamp",

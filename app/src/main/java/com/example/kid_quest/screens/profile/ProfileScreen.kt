@@ -17,9 +17,10 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -29,47 +30,28 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.example.kid_quest.R
 import com.example.kid_quest.components.ProfilePic
+import com.example.kid_quest.components.SurfaceColor
 import com.example.kid_quest.components.TopAppBar
-import com.example.kid_quest.data.History
 import com.example.kid_quest.navigation.Screens
 
-@Preview
 @Composable
 fun ProfileScreen(
     navController: NavController,
     viewModel: ProfileViewModel = hiltViewModel()
 ) {
-    val listHistory = listOf(
-        History(
-            uid = "",
-            quizName = "QuestZone",
-            participated = "Yes",
-            points = 15,
-            totalPoints = 20
-        ),
-        History(
-            uid = "",
-            quizName = "Quizzy",
-            participated = "Yes",
-            points = 15,
-            totalPoints = 20
-        ),
-        History(
-            uid = "",
-            quizName = "Quest_pop",
-            participated = "Yes",
-            points = 15,
-            totalPoints = 20
-        )
-    )
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
+    LaunchedEffect(Unit) {
+        viewModel.fetchUserData()
+        viewModel.joinedCompetition()
+    }
     Scaffold(
         topBar = {
             TopAppBar(
@@ -81,24 +63,23 @@ fun ProfileScreen(
         },
         containerColor = Color.White
     ) { innerPadding ->
-        Surface(
+        SurfaceColor(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .verticalScroll(rememberScrollState()),
-            color = Color.White
+                .verticalScroll(rememberScrollState())
         ) {
-            ProfileContent(listHistory, navController, viewModel)
+            ProfileContent(navController, viewModel,uiState)
         }
     }
 }
 
 @Composable
 fun ProfileContent(
-    listHistory: List<History>,
     navController: NavController,
-    viewModel: ProfileViewModel
-) {
+    viewModel: ProfileViewModel,
+    uistate: UiState
+) { val user = uistate.user
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -106,13 +87,16 @@ fun ProfileContent(
         horizontalAlignment = Alignment.CenterHorizontally
     )
     {
-        ProfilePic(
-            text = "Edit Profile",
-            name = "Deekshith Kulal",
-            email = "deekshithskulal485@gmail.com",
-            profile = R.drawable.profileimage
-        ) {
-            navController.navigate(Screens.EditProfile.route)
+        if (user != null) {
+            ProfilePic(
+                text = "Edit Profile",
+                showButton = true,
+                name = user.name,
+                email = user.email,
+                profile = user.profilePic
+            ) {
+                navController.navigate(Screens.EditProfile.route)
+            }
         }
         Spacer(modifier = Modifier.height(10.dp))
         FeatureShow(
@@ -133,7 +117,8 @@ fun ProfileContent(
         Spacer(modifier = Modifier.height(30.dp))
         Text(
             "History",
-            color = Color(0xFF7A7979),
+//            color = Color(0xFF7A7979),
+            color = Color.White,
             fontSize = 20.sp,
             fontWeight = FontWeight.SemiBold,
             textAlign = TextAlign.Start,
@@ -144,12 +129,12 @@ fun ProfileContent(
                     top = 15.dp
                 )
         )
-        listHistory.forEach { history ->
+        uistate.joinedCompetition.forEach { history ->
             FeatureShow(
-                text = history.quizName,
+                text = history.competitionName,
                 image = R.drawable.history,
-                score = history.points,
-                totalScore = history.totalPoints
+                score = history.score,
+                totalScore = history.totalQuestions
             )
         }
 
