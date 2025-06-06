@@ -56,16 +56,16 @@ fun Navigations() {
                 ProfileScreen(navController)
             }
             composable(Screens.LearningScreen.route){
-                LearningScreen(navController)
+                LearningScreen()
             }
             composable(Screens.EditProfile.route){
-                EditProfile()
+                EditProfile(navController)
             }
             composable(Screens.CreatedCompetition.route){
                 CreatedCompetition(navController)
             }
             composable(Screens.PostScreen.route) {
-                PostScreen()
+                PostScreen(navController)
             }
             composable(Screens.JoinCompetiton.route){
                 JoinCompetition()

@@ -26,6 +26,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
 import com.example.kid_quest.R
 import java.util.jar.Attributes.Name
 
@@ -33,7 +34,7 @@ import java.util.jar.Attributes.Name
 fun ProfilePic(text: String,
                name:String,
                email:String,
-               profile:Int,
+               profile:String,
                onClick: () -> Unit
 ) {
     Card(
@@ -50,7 +51,7 @@ fun ProfilePic(text: String,
                 .fillMaxSize()
                 .padding(start = 10.dp))
         {
-            Image(painter = painterResource(id = profile),
+            AsyncImage(model = profile,
                 contentDescription = "Profile Pic",
                 modifier= Modifier
                     .size(120.dp)

@@ -29,4 +29,10 @@ class AuthViewmodel @Inject constructor(private val repository: MainRepository) 
     ) = viewModelScope.launch(Dispatchers.IO) {
         repository.signIn(email, password, onSuccess= onSuccess, onFailure)
     }
+
+    fun forgotPassword(email: String, onSuccess: () -> Unit, onFailure: (Exception) -> Unit)
+    {
+        repository.forgotPassword(email, onSuccess, onFailure)
+
+    }
 }

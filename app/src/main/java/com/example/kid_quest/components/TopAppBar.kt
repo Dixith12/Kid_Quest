@@ -74,7 +74,7 @@ fun TopAppBar(
                 Icon(
                     imageVector = it,
                     contentDescription = "Create",
-                    tint = Color.Black,
+                    tint = Color.White,
                     modifier = Modifier.clickable {
                         onclick.invoke()
                     }

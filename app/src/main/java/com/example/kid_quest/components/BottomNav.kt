@@ -23,64 +23,59 @@ import com.google.firebase.auth.auth
 fun BottomNav(
     navController: NavController
 ) {
-    val navlist= listOf(navItems(label = "Home", icon = R.drawable.homebar),
+    val navlist = listOf(
+        navItems(label = "Home", icon = R.drawable.homebar),
         navItems(label = "Competition", icon = R.drawable.competitionbar),
         navItems(label = "Learning", icon = R.drawable.learningbar),
-        navItems(label = "Profile", icon = R.drawable.profilebar))
-    var selectedIndex by remember {
-        mutableIntStateOf(0)
-    }
+        navItems(label = "Profile", icon = R.drawable.profilebar)
+    )
+
     val user = Firebase.auth.currentUser
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
 
     NavigationBar(containerColor = Color.Black) {
         navlist.forEachIndexed { index, navItems ->
-            NavigationBarItem(
-            selected  = currentRoute == when (index) {
 
+            val targetRoute = when (index) {
                 0 -> Screens.HomeScreen.route
                 1 -> Screens.CompetitionScreen.route
                 2 -> Screens.LearningScreen.route
-                3 -> if(user?.email =="Admin@gmail.com")Screens.AdminProfile.route else Screens.ProfileScreen.route
-                else -> ""
-            },
-            onClick = {
-                selectedIndex = index
-                when (index) {
-                    0 -> navController.navigate(Screens.HomeScreen.route)
-                    1 -> navController.navigate(Screens.CompetitionScreen.route)
-                    2 -> navController.navigate(Screens.LearningScreen.route)
-                    3 -> if (user?.email?.lowercase() == "admin@gmail.com")
-                            navController.navigate(Screens.AdminProfile.route)
-                        else
-                            navController.navigate(Screens.ProfileScreen.route)
+                3 -> if (user?.email?.lowercase() == "admin@gmail.com") {
+                    Screens.AdminProfile.route
+                } else {
+                    Screens.ProfileScreen.route
                 }
-            },
-                icon = {
-                    if (selectedIndex == index) {
-                        Icon(
-                            painter = painterResource(navItems.icon),
-                            contentDescription = "Icons",
-                            tint = Color.White
-                        )
-                    } else {
-                        Icon(
-                            painter = painterResource(navItems.icon),
-                            contentDescription = "Icons",
-                            tint = Color(0xFF6E6A6A)
-                        )
+
+                else -> ""
+            }
+
+            val isSelected = currentRoute == targetRoute
+
+            NavigationBarItem(
+                selected = isSelected,
+                onClick = {
+                    navController.navigate(targetRoute) {
+                        popUpTo(navController.graph.startDestinationId) { saveState = true }
+                        launchSingleTop = true
+                        restoreState = true
                     }
                 },
+                icon = {
+                    Icon(
+                        painter = painterResource(navItems.icon),
+                        contentDescription = navItems.label,
+                        tint = if (isSelected) Color.White else Color(0xFF6E6A6A)
+                    )
+                },
                 label = {
-                    Text(text = navItems.label,
-                        color = if(selectedIndex==index)Color.White
-                    else
-                    Color(0xFF6E6A6A))
-                        },
+                    Text(
+                        text = navItems.label,
+                        color = if (isSelected) Color.White else Color(0xFF6E6A6A)
+                    )
+                },
                 colors = NavigationBarItemDefaults.colors(
-                    indicatorColor = Color(0x99A6A6B6),
-                    selectedTextColor = Color.Black
+                    indicatorColor = Color(0x99A6A6B6)
                 )
             )
         }

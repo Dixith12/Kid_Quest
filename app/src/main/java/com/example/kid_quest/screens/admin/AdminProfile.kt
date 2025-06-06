@@ -88,7 +88,7 @@ fun ProfileContent(createHistory: List<createHistories>) {
             text = "Edit Profile",
             name = "Deekshith Kulal",
             email = "deekshithskulal485@gmail.com",
-            profile = R.drawable.profileimage){
+            profile = R.drawable.profileimage.toString()){
 
         }
         Spacer(modifier = Modifier.height(10.dp))
@@ -164,7 +164,7 @@ fun CreateContent(createHistory: List<createHistories>) {
             text = "Log Out",
             name = "Deekshith Kulal",
             email = "deekshithskulal485@gmail.com",
-            profile = R.drawable.profileimage){
+            profile = R.drawable.profileimage.toString()){
         }
         createHistory.forEach {
                 create->

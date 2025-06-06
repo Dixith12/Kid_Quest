@@ -20,6 +20,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -29,18 +31,19 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.example.kid_quest.R
 import com.example.kid_quest.components.ProfilePic
+import com.example.kid_quest.components.SurfaceColor
 import com.example.kid_quest.components.TopAppBar
 import com.example.kid_quest.data.History
+import com.example.kid_quest.data.User
 import com.example.kid_quest.navigation.Screens
 
-@Preview
 @Composable
 fun ProfileScreen(
     navController: NavController,
@@ -69,7 +72,11 @@ fun ProfileScreen(
             totalPoints = 20
         )
     )
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
+    LaunchedEffect(Unit) {
+        viewModel.fetchUserData()
+    }
     Scaffold(
         topBar = {
             TopAppBar(
@@ -81,14 +88,13 @@ fun ProfileScreen(
         },
         containerColor = Color.White
     ) { innerPadding ->
-        Surface(
+        SurfaceColor(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .verticalScroll(rememberScrollState()),
-            color = Color.White
+                .verticalScroll(rememberScrollState())
         ) {
-            ProfileContent(listHistory, navController, viewModel)
+            ProfileContent(listHistory, navController, viewModel,uiState.user)
         }
     }
 }
@@ -97,7 +103,8 @@ fun ProfileScreen(
 fun ProfileContent(
     listHistory: List<History>,
     navController: NavController,
-    viewModel: ProfileViewModel
+    viewModel: ProfileViewModel,
+    user: User?
 ) {
     Column(
         modifier = Modifier
@@ -106,13 +113,15 @@ fun ProfileContent(
         horizontalAlignment = Alignment.CenterHorizontally
     )
     {
-        ProfilePic(
-            text = "Edit Profile",
-            name = "Deekshith Kulal",
-            email = "deekshithskulal485@gmail.com",
-            profile = R.drawable.profileimage
-        ) {
-            navController.navigate(Screens.EditProfile.route)
+        if (user != null) {
+            ProfilePic(
+                text = "Edit Profile",
+                name = user.name,
+                email = user.email,
+                profile = user.profilePic
+            ) {
+                navController.navigate(Screens.EditProfile.route)
+            }
         }
         Spacer(modifier = Modifier.height(10.dp))
         FeatureShow(
@@ -133,7 +142,8 @@ fun ProfileContent(
         Spacer(modifier = Modifier.height(30.dp))
         Text(
             "History",
-            color = Color(0xFF7A7979),
+//            color = Color(0xFF7A7979),
+            color = Color.White,
             fontSize = 20.sp,
             fontWeight = FontWeight.SemiBold,
             textAlign = TextAlign.Start,

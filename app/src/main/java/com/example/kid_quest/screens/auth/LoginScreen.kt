@@ -3,9 +3,12 @@ package com.example.kid_quest.screens.auth
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -115,6 +118,29 @@ fun LoginScreen(
                         onChange = { password = it },
                         Imeaction = ImeAction.Done
                     )
+                    Row(horizontalArrangement = Arrangement.End,
+                        modifier = Modifier.fillMaxWidth()){
+                        Text("Forgot Password?",
+                            modifier = Modifier.clickable {
+                                if(email.isEmpty()) Toast.makeText(context, "Please enter your email", Toast.LENGTH_SHORT).show()
+                                else
+                                {
+                                    viewmodel.forgotPassword(email = email, onSuccess = {
+                                        Toast.makeText(
+                                            context,
+                                            "Password Reset Email Sent",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                    }, onFailure = {
+                                        Toast.makeText(context, "Failed to send reset email", Toast.LENGTH_SHORT).show()
+                                    })
+                                }
+                            },
+                            color = Color.Blue,
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.SemiBold)
+                    }
+                    Spacer(modifier = Modifier.height(10.dp))
                     Button(
                         onClick = {
                             viewmodel.signIn(

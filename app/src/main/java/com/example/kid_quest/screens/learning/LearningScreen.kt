@@ -2,6 +2,7 @@ package com.example.kid_quest.screens.learning
 
 import BottomNav
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -27,15 +28,16 @@ import androidx.navigation.compose.rememberNavController
 import com.example.kid_quest.components.SurfaceColor
 import com.example.kid_quest.components.TopAppBar
 
+@Preview
 @Composable
-fun LearningScreen(navController: NavController) {
+fun LearningScreen() {
 
     Scaffold(
         topBar = {
             TopAppBar(name = "Learning")
         },
         bottomBar = {
-            BottomNav(navController)
+
         },
         containerColor = Color.Black
     ) { innerPadding ->
@@ -56,20 +58,33 @@ fun LearningContent() {
        )
        {
             LearningCard(name = "Class 8")
+            {
+
+            }
             LearningCard(name = "Class 9")
+            {
+
+            }
        }
        Row(
            modifier = Modifier.fillMaxWidth()
        )
        {
            LearningCard(name = "Class 10")
+           {
+
+           }
        }
    }
 }
 
 @Composable
-fun LearningCard(name: String) {
+fun LearningCard(name: String,
+                 onClick:()->Unit) {
     Card(modifier = Modifier.size(190.dp)
+        .clickable {
+            onClick()
+        }
         .padding(vertical = 10.dp, horizontal = 10.dp))
     {
         Column(verticalArrangement = Arrangement.Bottom,
@@ -84,8 +99,3 @@ fun LearningCard(name: String) {
     }
 }
 
-@Preview
-@Composable
-private fun LearningScreenPreview() {
-    LearningScreen(navController = rememberNavController())
-}

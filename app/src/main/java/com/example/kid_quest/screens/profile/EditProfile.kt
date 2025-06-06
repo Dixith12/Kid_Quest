@@ -1,6 +1,10 @@
 package com.example.kid_quest.screens.profile
 
-import androidx.compose.foundation.Image
+import android.annotation.SuppressLint
+import android.net.Uri
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -9,23 +13,22 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.DateRange
-import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldColors
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -36,25 +39,27 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.kid_quest.R
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
+import coil.compose.AsyncImage
+import com.example.kid_quest.components.DatePicker
+import com.example.kid_quest.components.SurfaceColor
 import com.example.kid_quest.components.TopAppBar
 import com.example.kid_quest.data.User
+import com.example.kid_quest.navigation.Screens
 
-@Preview
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun EditProfile() {
-    val user = User(name = "Deekshith",
-        profilePic = R.drawable.profile.toString(),
-        dob="12-12-2002",
-        email = "deekshithskulal485@gmail.com",
-        uid = "@#*#(#(#"
-        )
+fun EditProfile(navController: NavController, viewModel: ProfileViewModel = hiltViewModel()) {
+
+    val userData by viewModel.uiState.collectAsState()
+    val isUploading = userData.isUploading
     Scaffold(
         topBar = {
             TopAppBar(
@@ -62,83 +67,135 @@ fun EditProfile() {
                 front = Icons.AutoMirrored.Rounded.ArrowBack
             )
         },
-        containerColor = Color.White) {
-            innerPadding ->
-        Surface(modifier= Modifier
-            .fillMaxSize()
-            .imePadding()
-            .padding(innerPadding),
-            color = Color.White){
-                EditProfileContent(user)
+        containerColor = Color.White
+    ) { innerPadding ->
+        SurfaceColor(
+            modifier = Modifier
+                .fillMaxSize()
+                .imePadding()
+                .padding(innerPadding)
+        ) {
+            userData.user?.let {
+                EditProfileContent(it,viewModel,isUploading,navController)
+            }
         }
     }
-
 }
 
 @Composable
-fun EditProfileContent(user: User) {
+fun EditProfileContent(
+    user: User,
+    viewModel: ProfileViewModel,
+    isUploading: Boolean,
+    navController: NavController
+) {
+    var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
+
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        selectedImageUri = uri
+    }
+
     var name by remember { mutableStateOf(user.name) }
-    var email by remember { mutableStateOf(user.email) }
     var dob by remember { mutableStateOf(user.dob) }
-    Column(modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally){
-        Column(horizontalAlignment = Alignment.Start,
+    val context = LocalContext.current
+    Column(
+        modifier = Modifier.fillMaxSize()
+            ,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Column(
+            horizontalAlignment = Alignment.Start,
             verticalArrangement = Arrangement.Top,
             modifier = Modifier
                 .fillMaxSize()
                 .padding(15.dp)
-                .weight(1f))
+                .weight(1f)
+                .verticalScroll(rememberScrollState())
+        )
         {
-            Row(modifier = Modifier.fillMaxWidth(),
+            Row(
+                modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center)
+                horizontalArrangement = Arrangement.Center
+            )
             {
-                Column(horizontalAlignment = Alignment.CenterHorizontally){
-                    Image(painter = painterResource(id = R.drawable.image),
-                        contentDescription = "Profile_Pic",
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    if(selectedImageUri!=null)
+                    {
+                    AsyncImage(selectedImageUri,
+                        contentDescription = "Selected_Profile_Pic",
                         contentScale = ContentScale.FillBounds,
                         modifier = Modifier
                             .padding(12.dp)
                             .clip(CircleShape)
-                            .size(120.dp))
-                    Button(onClick = {
-
-                    },
-                        colors = ButtonDefaults.buttonColors(Color.Black)){
-                        Text("Upload Profile Image",
+                            .size(120.dp)
+                    )
+                    }
+                    else
+                    {
+                        AsyncImage(user.profilePic,
+                            contentDescription = "Current_Profile_Pic",
+                            contentScale = ContentScale.FillBounds,
+                            modifier = Modifier
+                                .padding(12.dp)
+                                .clip(CircleShape)
+                                .size(120.dp))
+                    }
+                    Button(
+                        onClick = {
+                            launcher.launch("image/*")
+                        },
+                        colors = ButtonDefaults.buttonColors(Color.Black)
+                    ) {
+                        Text(
+                            "Upload Profile Image",
                             modifier = Modifier,
-                            color = Color.White)
+                            color = Color.White
+                        )
                     }
                 }
             }
             TextName("Name")
             TextFields(
-                name =name,
-                onValue ={
-                    name=it
-                })
-            TextName("Email")
-            TextFields(
-                name =email,
-                onValue ={
-                    email=it
+                name = name,
+                onValue = {
+                    name = it
                 })
             TextName("DOB")
-            TextFields(
-                name =dob,
-                onValue ={
-                    dob=it
-                },
-                icon = Icons.Filled.DateRange)
+            DatePicker(
+                dob = dob,
+                icon = Icons.Filled.DateRange,
+                Imeaction = ImeAction.Done,
+            ){
+                dob = it
+            }
         }
-        Button(onClick = {
+        Button(
+            onClick = {
+                viewModel.updateProfile(name = name,
+                    dob = dob,
+                    profileimage = selectedImageUri,
+                    onSuccess = {
+                        viewModel.fetchUserData()
+                        Toast.makeText(context,"Profile Updated",Toast.LENGTH_SHORT).show()
+                        navController.navigate(Screens.ProfileScreen.route)
+                    },
+                    onFailure = {
+                        Toast.makeText(context,"Something Went Wrong..!!",Toast.LENGTH_SHORT).show()
+                    })
 
-        },
+            },
+            enabled = !isUploading,
             colors = ButtonDefaults.buttonColors(Color.Black),
-            modifier = Modifier.padding(bottom = 10.dp))
+            modifier = Modifier.padding(bottom = 10.dp)
+        )
         {
-            Text("Save Profile",
-                color = Color.White)
+            Text(
+                text= if(isUploading) "Updating.." else "Save Profile",
+                color = Color.White
+            )
         }
     }
 }
@@ -146,9 +203,11 @@ fun EditProfileContent(user: User) {
 @Composable
 fun TextFields(
     name: String,
-    onValue:(String)->Unit,
-    icon: ImageVector? =null) {
-    TextField(value = name,
+    onValue: (String) -> Unit,
+    icon: ImageVector? = null
+) {
+    TextField(
+        value = name,
         onValueChange = onValue,
         textStyle = TextStyle(
             fontSize = 18.sp,
@@ -159,23 +218,30 @@ fun TextFields(
             .clip(RoundedCornerShape(8.dp)),
         trailingIcon = {
             if (icon != null) {
-                Icon(imageVector = icon,
-                    contentDescription = "Anything")
+                Icon(
+                    imageVector = icon,
+                    contentDescription = "Anything"
+                )
             }
         },
         colors = TextFieldDefaults.colors(
             focusedIndicatorColor = Color.Transparent,
             unfocusedIndicatorColor = Color.Transparent
-        ))
+        )
+    )
 }
 
 @Composable
 fun TextName(string: String) {
-    Text(string,
+    Text(
+        string,
         fontSize = 20.sp,
         fontWeight = FontWeight.SemiBold,
-        modifier = Modifier.padding(start = 3.dp,
+        modifier = Modifier.padding(
+            start = 3.dp,
             top = 20.dp,
-            bottom =10.dp),
-        color = Color.Black)
+            bottom = 10.dp
+        ),
+        color = Color.White
+    )
 }

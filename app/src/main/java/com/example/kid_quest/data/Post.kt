@@ -8,5 +8,8 @@ data class Post(
     val userProfileUrl: String = "",
     val timestamp: String = "",
     val imageUrls: List<String> = emptyList(),
-    val likes: Int = 0
+    var likes: Int = 0,
+    val likedBy: List<String> = emptyList(),
+    var isLikedByCurrentUser: Boolean = false
+
 )

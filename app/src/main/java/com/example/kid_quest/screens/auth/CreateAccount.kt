@@ -49,6 +49,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.kid_quest.R
+import com.example.kid_quest.components.DatePicker
 import com.example.kid_quest.components.TextFields
 import com.example.kid_quest.navigation.Screens
 
@@ -117,12 +118,13 @@ fun CreateScreen(navController: NavController,
                         value = password,
                         onChange = { password = it },
                         Imeaction = ImeAction.Next)
-                    TextFields(
-                        name = "DOB",
+                    DatePicker(name="Date of Birth",
                         icon = Icons.Filled.DateRange,
-                        value = dob,
-                        onChange = { dob = it },
-                        Imeaction = ImeAction.Done)
+                        dob = dob,
+                        Imeaction = ImeAction.Done,
+                        onDateSelected = {
+                            dob = it
+                        })
                     Button(
                         onClick = {
                             if (name.isNotEmpty() && dob.isNotEmpty() && email.isNotEmpty() && password.isNotEmpty())
@@ -134,7 +136,7 @@ fun CreateScreen(navController: NavController,
                                         popUpTo(Screens.CreateAccount.route) { inclusive = true }
                                     }
                                 }, onFailure = {
-                                    Toast.makeText(context,"There have been some issue", Toast.LENGTH_SHORT).show()
+                                        Toast.makeText(context, "Signup failed: ${it.localizedMessage}", Toast.LENGTH_LONG).show()
                                 })
                             }
                             else{

@@ -95,7 +95,7 @@ fun CreateContent(
             text = "Log Out",
             name = "Deekshith Kulal",
             email = "deekshithskulal485@gmail.com",
-            profile = R.drawable.profileimage){
+            profile = R.drawable.profileimage.toString()){
             viewModel.logOut()
             navController.navigate(Screens.LoginScreen.route){
                 popUpTo(Screens.HomeScreen.route){inclusive=true}
