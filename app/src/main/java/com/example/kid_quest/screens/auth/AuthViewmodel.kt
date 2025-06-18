@@ -58,4 +58,10 @@ class AuthViewmodel @Inject constructor(private val repository: MainRepository) 
         repository.forgotPassword(email, onSuccess, onFailure)
 
     }
+
+    fun forgotPassword(email: String, onSuccess: () -> Unit, onFailure: (Exception) -> Unit)
+    {
+        repository.forgotPassword(email, onSuccess, onFailure)
+
+    }
 }

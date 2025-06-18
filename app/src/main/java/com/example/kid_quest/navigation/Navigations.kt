@@ -61,7 +61,7 @@ fun Navigations() {
                 ProfileScreen(navController)
             }
             composable(Screens.LearningScreen.route){
-                LearningScreen(navController)
+                LearningScreen()
             }
             composable(Screens.EditProfile.route){
                 EditProfile(navController)
